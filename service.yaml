@@ -1,15 +1,15 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
-spec:
-  template:
-    spec:
-      metadata:
+metadata:
       name: my-service
       annotations:
         run.googleapis.com/ingress: internal
         autoscaling.knative.dev/minScale: '2'
         autoscaling.knative.dev/maxScale: '50'
         run.googleapis.com/cpu-throttling: 'False'
+spec:
+  template:
+    spec:
       containers:
       - image: us-docker.pkg.dev/cloudrun/container/hello@sha256:42517c698aef1d7105a332c41381b37ce81aaafe0486a8aaf0b0d79e38b0356f
         resources:
