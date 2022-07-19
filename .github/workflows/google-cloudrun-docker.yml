@@ -12,8 +12,6 @@ jobs:
       PROJECT_ID: test-darwin-328107
       REGION: us-central1
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
     - name: Authenticate With GCP
       id: auth
       uses: google-github-actions/auth@v0
@@ -24,6 +22,9 @@ jobs:
       uses: google-github-actions/setup-gcloud@v0
       with:
         project_id: ${{ env.PROJECT_ID }}
+        
+    - name: Checkout
+      uses: actions/checkout@v2
     
     - name: Deploy to Cloud Run
       uses: google-github-actions/deploy-cloudrun@v0
