@@ -6,7 +6,7 @@ metadata:
     run.googleapis.com/ingress: internal
     autoscaling.knative.dev/minScale: '2'
     autoscaling.knative.dev/maxScale: '50'
-    run.googleapis.com/cpu-throttling: TRUE
+    run.googleapis.com/cpu-throttling: 'True'
 spec:
   template:
     spec:
