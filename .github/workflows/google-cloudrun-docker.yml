@@ -29,7 +29,7 @@ jobs:
         service: my-service
         image: us-docker.pkg.dev/cloudrun/container/hello@sha256:42517c698aef1d7105a332c41381b37ce81aaafe0486a8aaf0b0d79e38b0356f
         region: ${{ env.REGION }}
-        metadata: ~/service.yaml
+        metadata: ../service.yaml
 
           
 
