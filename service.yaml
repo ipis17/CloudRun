@@ -1,7 +1,14 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
 metadata:
   name: my-service
 spec:
   template:
     metadata:
-      annotations:
-        autoscaling.knative.dev/maxScale: '40'
+      name: my-service
+    spec:
+      containers:
+      - image: us-docker.pkg.dev/cloudrun/container/hello@sha256:42517c698aef1d7105a332c41381b37ce81aaafe0486a8aaf0b0d79e38b0356f
+        resources:
+          limits:
+            cpu: 4
