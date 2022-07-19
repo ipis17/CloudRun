@@ -1,56 +1,31 @@
-name: Build and Deploy to Cloud Run
-
 on:
   push:
     branches:
-      - "main"
-
-env:
-  PROJECT_ID: test-darwin-328107 # TODO: update Google Cloud project id
-  GAR_LOCATION: us-east1 # TODO: update Artifact Registry location
-  SERVICE: cloudrunaction # TODO: update Cloud Run service name
-  REGION: us-central1  # TODO: update Cloud Run service region
-
+    - master
+    
 jobs:
-  deploy:
-    # Add 'id-token' with the intended permissions for workload identity federation
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
+  container-build-push-deploy:
+    name: Build Container Push to Registry Deploy to Cloud Run
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: us-docker.pkg.dev/cloudrun/container/hello@sha256:42517c698aef1d7105a332c41381b37ce81aaafe0486a8aaf0b0d79e38b0356f
+      PROJECT_ID: test-darwin-328107
+      REGION: us-central1
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - name: Authenticate With GCP
+      id: auth
+      uses: google-github-actions/auth@v0
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      #- name: Google Auth
-      #  id: auth
-      #  uses: 'google-github-actions/auth@v0'
-      #  with:
-      #    token_format: 'access_token'
-      #    workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
-      #    service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}' # e.g. - my-service-account@my-project.iam.gserviceaccount.com
-
-      # NOTE: Alternative option - authentication via credentials json
-      - name: Google Auth
-        id: auth
-        uses: 'google-github-actions/auth@v0'
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      # BEGIN - Docker auth and build (NOTE: If you already have a container image, these Docker steps can be omitted)
-
-      # END - Docker auth and build
-
-      - name: Deploy to Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          service: cloudrunaction
-          region: us-central1
-          # NOTE: If using a pre-built image, update the image name here
-          image: us-docker.pkg.dev/cloudrun/container/hello@sha256:42517c698aef1d7105a332c41381b37ce81aaafe0486a8aaf0b0d79e38b0356f
-
-      # If required, use the Cloud Run url output in later steps
-      - name: Show Output
-        run: echo ${{ steps.deploy.outputs.url }}
+    - name: Setup Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+    
+    - name: Deploy to Cloud Run
+      uses: google-github-actions/deploy-cloudrun@v0
+      with:
+        service: my-service
+        image: us-docker.pkg.dev/cloudrun/container/hello@sha256:42517c698aef1d7105a332c41381b37ce81aaafe0486a8aaf0b0d79e38b0356f
+        region: ${{ env.REGION }}
